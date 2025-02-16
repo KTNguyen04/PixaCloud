@@ -12,17 +12,17 @@ const sequelize = new Sequelize(
 );
 
 const db = {};
+db.Author = require("./Author")(sequelize, DataTypes);
 db.Pic = require("./Pic")(sequelize, DataTypes);
-// db.Category = require("./Category")(sequelize, DataTypes);
 // db.Product = require("./Product")(sequelize, DataTypes);
 // db.Cart = require("./Cart")(sequelize, DataTypes);
 // db.CartItem = require("./CartItem")(sequelize, DataTypes);
 
-// Object.keys(db).forEach((modelName) => {
-//   if ("associate" in db[modelName]) {
-//     db[modelName].associate(db);
-//   }
-// });
+Object.keys(db).forEach((modelName) => {
+  if ("associate" in db[modelName]) {
+    db[modelName].associate(db);
+  }
+});
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

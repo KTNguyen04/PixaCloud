@@ -12,10 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      author: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
+      //   author: {
+      //     type: DataTypes.STRING,
+      //     allowNull: false,
+      //   },
       path: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -34,9 +34,11 @@ module.exports = (sequelize, DataTypes) => {
       },
     }
   );
-  //   Product.associate = function (models) {
-  //     Product.belongsTo(models.Category, { onDelete: "CASCADE" });
-  //     Product.hasMany(models.CartItem);
-  //   };
+  Pic.associate = function (models) {
+    Pic.belongsTo(models.Author, {
+      foreignKey: "authorId",
+      onDelete: "CASCADE",
+    });
+  };
   return Pic;
 };
