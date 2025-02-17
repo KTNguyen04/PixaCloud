@@ -2,6 +2,7 @@ const { Pic } = require("../models");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const { Op } = require("sequelize");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -9,10 +10,49 @@ const upload = multer({ storage: storage });
 module.exports = {
   getAll: async (req, res, next) => {
     try {
-      const pics = await Pic.findAll();
+      const { sort = "DESC", startDate, endDate } = req.query;
+
+      const whereCondition = {};
+
+      // Thêm điều kiện lọc theo createdAt nếu có startDate hoặc endDate
+      if (startDate || endDate) {
+        whereCondition.createdAt = {};
+        if (startDate) whereCondition.createdAt[Op.gte] = new Date(startDate);
+        if (endDate) whereCondition.createdAt[Op.lte] = new Date(endDate);
+      }
+
+      const pics = await Pic.findAll({
+        where: whereCondition,
+        order: [["createdAt", sort.toUpperCase()]],
+      });
+
       res.status(200).send(pics);
     } catch (error) {
-      res.status(500).send(error);
+      console.error("Get all pictures error:", error);
+      res.status(500).send({ error: "Internal Server Error" });
+    }
+  },
+  getAllByAuthor: async (req, res) => {
+    try {
+      const userId = req.user.id; // Lấy ID của user hiện tại
+      const { sort = "DESC", startDate, endDate } = req.query;
+      const whereCondition = { authorId: userId };
+
+      if (startDate || endDate) {
+        whereCondition.createdAt = {};
+        if (startDate) whereCondition.createdAt[Op.gte] = new Date(startDate);
+        if (endDate) whereCondition.createdAt[Op.lte] = new Date(endDate);
+      }
+
+      const pics = await Pic.findAll({
+        where: whereCondition,
+        order: [["createdAt", sort.toUpperCase()]],
+      });
+
+      res.status(200).json(pics);
+    } catch (error) {
+      console.error("Get all pictures by user error:", error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
   },
   create: async (req, res, next) => {
@@ -20,10 +60,12 @@ module.exports = {
       if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
       }
+
       const { originalname } = req.file;
       const ext = path.extname(originalname);
 
       req.body.ext = ext;
+      req.body.authorId = req.user.id;
       const pic = await Pic.create(req.body);
 
       const savedPath = path.join(
@@ -41,10 +83,17 @@ module.exports = {
   },
   delete: async (req, res, next) => {
     try {
-      const pic = await Pic.findByPk(req.params.id);
+      const { id } = req.params;
+      const userId = req.user.id;
+      const pic = await Pic.findByPk(id);
 
       if (!pic) {
         return res.status(404).json({ error: "Picture not found" });
+      }
+      if (pic.authorId !== userId) {
+        return res
+          .status(403)
+          .json({ error: "You do not have permission to delete this picture" });
       }
 
       const picPath = path.join(
@@ -68,12 +117,18 @@ module.exports = {
   },
   update: async (req, res, next) => {
     try {
-      const pic = await Pic.findByPk(req.params.id);
+      const { id } = req.params;
+      const userId = req.user.id; // Lấy ID user hiện tại
+      const pic = await Pic.findByPk(id);
 
       if (!pic) {
         return res.status(404).json({ error: "Picture not found" });
       }
-
+      if (pic.authorId !== userId) {
+        return res
+          .status(403)
+          .json({ error: "You do not have permission to update this picture" });
+      }
       if (!req.body.title) {
         return res.status(400).json({ error: "Title is required" });
       }

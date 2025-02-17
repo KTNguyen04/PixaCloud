@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const verifyToken = require("../middlewares/VerifyToken");
 const Pic = require("../controllers/Pic");
 
 router.get("/", Pic.getAll);
-router.post("/", Pic.upload.single("pic"), Pic.create);
-router.delete("/:id", Pic.delete);
-router.put("/:id", Pic.update);
+router.get("/personal", verifyToken, Pic.getAll);
+router.post("/", verifyToken, Pic.upload.single("pic"), Pic.create);
+router.delete("/:id", verifyToken, Pic.delete);
+router.put("/:id", verifyToken, Pic.update);
 
 module.exports = router;
