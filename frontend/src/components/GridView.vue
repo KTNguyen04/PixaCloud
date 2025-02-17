@@ -13,7 +13,7 @@
     >
       <template #item="slotProps">
         <img
-          :src="slotProps.item.itemImageSrc"
+          :src="slotProps.item.download_url"
           :alt="slotProps.item.alt"
           style="width: 100%; display: block"
         />

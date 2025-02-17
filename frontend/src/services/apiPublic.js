@@ -1,8 +1,7 @@
-// services/apiPublic.js
 import axios from "axios";
 
 const apiPublic = axios.create({
-  baseURL: "https://picsum.photos",
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
   },

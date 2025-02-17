@@ -1,19 +1,21 @@
 // services/apiAuth.js
 import axios from "axios";
+import { useAuthStore } from "../store/auth";
 
 const apiAuth = axios.create({
-  baseURL: "https://api.example.com",
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
   withCredentials: true, // Nếu API cần gửi cookie/session
 });
 
-// Thêm interceptor để tự động thêm token
 apiAuth.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // Hoặc lấy từ Pinia store
+    const authStore = useAuthStore();
+    const token = authStore.getToken;
     if (token) {
+      console.log(token);
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
