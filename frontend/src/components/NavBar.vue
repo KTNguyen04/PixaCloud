@@ -45,7 +45,7 @@ export default {
       try {
         //   console.log(response)
         //   console.log(response.credential)
-        console.log(response.code);
+        console.log("code", response.code);
         const res = await authService.googleLogin({ code: response.code });
 
         console.log("Backend Response:", res);
