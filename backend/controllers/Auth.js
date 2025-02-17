@@ -28,19 +28,15 @@ module.exports = {
   googleLogin: async (req, res, next) => {
     try {
       const { code } = req.body;
-      console.log(code);
-
       const payload = await verifyCode(code);
-      console.log("[pl", payload);
       const { email, name, picture } = payload;
 
-      // Check if the user already exists in the database
       let user = await Author.findOne({
         where: { email },
       });
 
       if (!user) {
-        user = await User.create({
+        user = await Author.create({
           name: name,
           email: email,
         });
