@@ -1,15 +1,32 @@
 <template>
   <div class="card">
-    <Toolbar style="border-radius: 3rem; padding: 1rem 1rem 1rem 1.5rem">
+    <ToolBar style="border-radius: 3rem; padding: 0rem 1rem 0rem 1.5rem">
       <template #start>
         <div class="flex items-center gap-2">
-          <PVButton icon="pi pi-cloud" label="PixaCloud" text plain size="large" />
+          <PVButton
+            icon="pi pi-cloud"
+            label="PixaCloud"
+            text
+            plain
+            size="large"
+            as="a"
+            href="/"
+            style="text-decoration: none"
+          />
         </div>
+        <PVButton v-if="authStore.loggedIn" label="My Collection" text plain></PVButton>
+        <PVButton
+          v-else
+          label="My Collection"
+          text
+          plain
+          v-tooltip.bottom="'Please log in first'"
+        ></PVButton>
       </template>
 
       <template #end>
         <div class="flex items-center gap-2">
-          <GoogleLogin :callback="loginCallback" prompt>
+          <GoogleLogin v-if="!authStore.loggedIn" :callback="loginCallback" prompt>
             <Avatar
               id="avatar"
               icon="pi pi-user"
@@ -18,29 +35,42 @@
               v-tooltip.left="'Login with Google'"
             />
           </GoogleLogin>
+          <template v-else>
+            <Avatar
+              id="avatar"
+              icon="pi pi-user"
+              style="background-color: #dee9fc; color: #1a2551"
+              shape="circle"
+              @click="toggle"
+            />
+            <Popover ref="op">
+              <PVButton label="Log Out" icon="pi pi-sign-out" text plain @click="logOut"></PVButton>
+            </Popover>
+          </template>
         </div>
       </template>
-    </Toolbar>
+    </ToolBar>
   </div>
 </template>
 
 <script>
-import Toolbar from "primevue/toolbar";
 import Avatar from "primevue/avatar";
 import authService from "@/services/authService";
 import { useAuthStore } from "@/store/auth";
 
+import Popover from "primevue/popover";
+
 export default {
   components: {
-    Toolbar,
     Avatar,
+    Popover,
+  },
+  computed: {
+    authStore() {
+      return useAuthStore();
+    },
   },
   methods: {
-    data() {
-      return {
-        authStore: useAuthStore(), // Gọi store khi component được tạo
-      };
-    },
     async loginCallback(response) {
       try {
         //   console.log(response)
@@ -53,11 +83,21 @@ export default {
         if (res.status === 200) {
           this.authStore.setToken(res.data.token);
           this.authStore.setUser(res.data.user);
-          // router.push("/");
+          this.$router.push("/");
         }
       } catch (error) {
         console.error("Error:", error);
       }
+    },
+    toggle(event) {
+      this.$refs.op.toggle(event);
+    },
+    logOut() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      this.authStore.$reset();
+      this.$router.push("/");
     },
   },
 };

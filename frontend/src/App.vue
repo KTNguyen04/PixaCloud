@@ -1,19 +1,19 @@
 <script>
 import NavBar from "./components/NavBar.vue";
 import GridView from "./components/GridView.vue";
-// import Button from "primevue/button";
-
-// import Menubar from "primevue/menubar";
+import FileUpload from "./components/MenuBar.vue";
 
 export default {
   components: {
     NavBar,
     GridView,
+    FileUpload,
   },
 };
 </script>
 
 <template>
   <NavBar />
+  <FileUpload />
   <GridView class="mt-7" />
 </template>
