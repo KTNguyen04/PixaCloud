@@ -28,9 +28,10 @@ module.exports = {
   googleLogin: async (req, res, next) => {
     try {
       const { code } = req.body;
+      console.log(code);
 
       const payload = await verifyCode(code);
-      console.log(payload);
+      console.log("[pl", payload);
       const { email, name, picture } = payload;
 
       // Check if the user already exists in the database
@@ -61,7 +62,10 @@ module.exports = {
       });
     } catch (error) {
       console.error("Google login error:", error);
-      return res.status(401).send({ message: "Google login failed.", error });
+      return res.status(401).send({
+        message: "Google login failed.",
+        error: error.response.data,
+      });
     }
   },
 };
