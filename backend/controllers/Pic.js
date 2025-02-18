@@ -1,4 +1,4 @@
-const { Pic } = require("../models");
+const { Pic, Author } = require("../models");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -14,7 +14,6 @@ module.exports = {
 
       const whereCondition = {};
 
-      // Thêm điều kiện lọc theo createdAt nếu có startDate hoặc endDate
       if (startDate || endDate) {
         whereCondition.createdAt = {};
         if (startDate) whereCondition.createdAt[Op.gte] = new Date(startDate);
@@ -24,6 +23,12 @@ module.exports = {
       const pics = await Pic.findAll({
         where: whereCondition,
         order: [["createdAt", sort.toUpperCase()]],
+        include: [
+          {
+            model: Author,
+            attributes: ["id", "name"],
+          },
+        ],
       });
 
       res.status(200).send(pics);
@@ -47,6 +52,12 @@ module.exports = {
       const pics = await Pic.findAll({
         where: whereCondition,
         order: [["createdAt", sort.toUpperCase()]],
+        include: [
+          {
+            model: Author,
+            attributes: ["id", "name"],
+          },
+        ],
       });
 
       res.status(200).json(pics);
