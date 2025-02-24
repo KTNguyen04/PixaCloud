@@ -12,4 +12,15 @@ module.exports = {
   authentication: {
     jwtSecret: process.env.JWT_SECRET,
   },
+  S3: {
+    accessKey: process.env.S3_ACCESS_KEY,
+    secretKey: process.env.S3_SECRET_KEY,
+    bucketName: process.env.S3_BUCKET_NAME,
+    region: process.env.S3_REGION,
+  },
+  GGOauth: {
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri: process.env.GOOGLE_REDIRECT_URI,
+  },
 };

@@ -1,11 +1,16 @@
 const { Pic, Author } = require("../models");
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
-const { Op } = require("sequelize");
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const { Op } = require("sequelize");
+const config = require("../config/config");
+
+const AWS = require("aws-sdk");
+const s3 = new AWS.S3({
+  accessKeyId: config.S3.accessKey,
+  secretAccessKey: config.S3.secretKey,
+  region: config.S3.region,
+});
 
 module.exports = {
   getAll: async (req, res, next) => {
@@ -68,25 +73,26 @@ module.exports = {
   },
   create: async (req, res, next) => {
     try {
-      if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded" });
+      const { originalname, contentType } = req.body;
+      if (!originalname || !contentType) {
+        return res.status(400).json({ error: "Missing file details" });
       }
 
-      const { originalname } = req.file;
+      // const { originalname } = req.file;
       const ext = path.extname(originalname);
 
       req.body.ext = ext;
       req.body.authorId = req.user.id;
       const pic = await Pic.create(req.body);
+      const savedName = "pics/" + pic.id + ext;
 
-      const savedPath = path.join(
-        __dirname,
-        "../public/pics",
-        pic.id.toString() + ext
-      );
-      await fs.promises.writeFile(savedPath, req.file.buffer);
-
-      res.status(200).send(pic);
+      const presignedUrl = s3.getSignedUrl("putObject", {
+        Bucket: config.S3.bucketName,
+        Key: savedName,
+        Expires: 60,
+        ContentType: req.body.contentType,
+      });
+      res.status(200).json({ pic, presignedUrl });
     } catch (error) {
       console.log(error);
       res.status(500).send({ error: error.code });
@@ -107,18 +113,13 @@ module.exports = {
           .json({ error: "You do not have permission to delete this picture" });
       }
 
-      const picPath = path.join(
-        __dirname,
-        "../public/pics",
-        `${pic.id}${pic.ext}`
-      );
+      const deleteParams = {
+        Bucket: config.S3.bucketName,
+        Key: "pics/" + pic.id + pic.ext,
+      };
 
+      await s3.deleteObject(deleteParams).promise();
       await pic.destroy();
-
-      // Delete the file from storage if it exists
-      if (fs.existsSync(picPath)) {
-        await fs.promises.unlink(picPath);
-      }
 
       res.status(200).json({ message: "Picture deleted successfully" });
     } catch (error) {
@@ -153,6 +154,4 @@ module.exports = {
       res.status(500).json({ error: error.message || "Internal Server Error" });
     }
   },
-
-  upload: upload,
 };
