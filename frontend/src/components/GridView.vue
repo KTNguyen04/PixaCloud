@@ -130,6 +130,7 @@ import Card from "primevue/card";
 import picService from "@/services/picService";
 import InputText from "primevue/inputtext";
 import ConfirmPopup from "primevue/confirmpopup";
+import { usePicStore } from "@/store/pic";
 
 export default {
   components: {
@@ -140,7 +141,6 @@ export default {
   },
   data() {
     return {
-      images: [],
       isPersonal: false,
       activeIndex: 0,
       visible: false,
@@ -156,8 +156,8 @@ export default {
     },
     async fetchPics() {
       try {
-        const response = await picService.getPics({ page: 1, limit: 10 });
-        this.images = response.data;
+        // const response = await picService.getPics({ page: 1, limit: 10 });
+        await this.picStore.fetchPics({ page: 1, limit: 10 });
       } catch (error) {
         console.error("Error: ", error);
       }
@@ -198,7 +198,8 @@ export default {
         formData.append("title", this.title);
         console.log(formData);
         try {
-          await picService.editPic(this.currentId, formData);
+          const response = await picService.editPic(this.currentId, formData);
+          this.picStore.updatePic(response.pic);
 
           this.currentID = null;
           this.$toast.add({
@@ -230,6 +231,7 @@ export default {
     async onDelete() {
       try {
         await picService.deletePic(this.currentId);
+        this.picStore.deletePic(this.currentId);
         this.$toast.add({
           severity: "info",
           summary: "Confirmed",
@@ -252,6 +254,14 @@ export default {
 
   mounted() {
     this.fetchPics();
+  },
+  computed: {
+    picStore() {
+      return usePicStore();
+    },
+    images() {
+      return this.picStore.allPic;
+    },
   },
 };
 </script>

@@ -86,6 +86,7 @@ import InputText from "primevue/inputtext";
 import FileUpload from "primevue/fileupload";
 import { useAuthStore } from "@/store/auth";
 import picService from "@/services/picService";
+import { usePicStore } from "@/store/pic";
 
 export default {
   components: {
@@ -101,6 +102,9 @@ export default {
       checked: false,
       visible: false,
       src: null,
+      fromDate: null,
+      toDate: null,
+      sort: "desc",
       // authStore: useAuthStore(),
     };
   },
@@ -108,18 +112,64 @@ export default {
     authStore() {
       return useAuthStore();
     },
+    picStore() {
+      return usePicStore();
+    },
+  },
+  watch: {
+    checked(val) {
+      if (val) {
+        this.sort = "asc";
+      } else {
+        this.sort = "desc";
+      }
+      if (this.fromDate && this.toDate) {
+        this.picStore.fetchPics({ sort: this.sort, from: this.fromDate, to: this.toDate });
+      } else {
+        this.picStore.fetchPics({ sort: this.sort });
+      }
+    },
+    dates(val) {
+      console.log(val);
+      if (!val || !val[1]) {
+        this.fromDate = null;
+        this.toDate = null;
+        this.picStore.fetchPics({ sort: this.sort });
+        return;
+      }
+      this.fromDate = val[0];
+      this.toDate = val[1];
+
+      console.log(this.fromDate, this.toDate);
+      const formatToYYYYMMDD = (d) => {
+        const [day, month, year] = d.toLocaleDateString("vi-VN").split("/");
+        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+      };
+      this.fromDate = formatToYYYYMMDD(this.fromDate);
+      this.toDate = formatToYYYYMMDD(this.toDate);
+
+      this.picStore.fetchPics({ sort: this.sort, from: this.fromDate, to: this.toDate });
+    },
   },
   methods: {
     async onFormSubmit() {
       console.log(this.title, this.picture);
       if (this.title && this.picture) {
-        const formData = new FormData();
-        formData.append("picture", this.picture);
-        formData.append("title", this.title);
-        console.log(formData);
+        const file = this.picture;
         try {
-          await picService.uploadPic(formData);
-          // this.$toast.add({ severity: "success", summary: "Picture is uploaded.", life: 3000 });
+          const response = await picService.getPresignedUrl({
+            originalname: file.name,
+            contentType: file.type,
+          });
+          const { presignedUrl, pic } = response.data;
+          await picService.uploadPicToS3(presignedUrl, file);
+          await this.picStore.addPic(pic);
+
+          this.$toast.add({
+            severity: "success",
+            summary: "Picture is uploaded successfully.",
+            life: 3000,
+          });
 
           this.picture = null;
           this.title = null;
