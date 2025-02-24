@@ -119,12 +119,16 @@ export default {
   watch: {
     checked(val) {
       if (val) {
-        this.sort = "asc";
+        this.sort = "ASC";
       } else {
-        this.sort = "desc";
+        this.sort = "DESC";
       }
       if (this.fromDate && this.toDate) {
-        this.picStore.fetchPics({ sort: this.sort, from: this.fromDate, to: this.toDate });
+        this.picStore.fetchPics({
+          sort: this.sort,
+          startDate: this.fromDate,
+          endDate: this.toDate,
+        });
       } else {
         this.picStore.fetchPics({ sort: this.sort });
       }
@@ -148,7 +152,7 @@ export default {
       this.fromDate = formatToYYYYMMDD(this.fromDate);
       this.toDate = formatToYYYYMMDD(this.toDate);
 
-      this.picStore.fetchPics({ sort: this.sort, from: this.fromDate, to: this.toDate });
+      this.picStore.fetchPics({ sort: this.sort, startDate: this.fromDate, endDate: this.toDate });
     },
   },
   methods: {
