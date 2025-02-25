@@ -13,8 +13,8 @@
     >
       <template #item="slotProps">
         <img
-          :src="slotProps.item.download_url"
-          :alt="slotProps.item.alt"
+          :src="`/${slotProps.item.path}`"
+          :alt="slotProps.item.title"
           style="width: 100%; display: block"
         />
       </template>
@@ -36,16 +36,15 @@
         <Card style="overflow: hidden" class="pb-0">
           <template #header>
             <img
-              :src="image.download_url"
-              :alt="image.alt"
+              :src="`/${image.path}`"
+              :alt="image.title"
               style="cursor: pointer"
-              v-tooltip.top="image.size"
               @click="imageClick(index)"
               class="image"
               width="100%"
             />
           </template>
-          <template #title>{{ image.name }}</template>
+          <template #title>{{ image.title }}</template>
           <template #subtitle v-if="isPersonal"
             >by {{ image.author }} -
             <i class="m-0">{{ image.createAt }}</i>
