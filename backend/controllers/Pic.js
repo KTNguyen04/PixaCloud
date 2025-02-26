@@ -1,18 +1,25 @@
 const { Pic, Author } = require("../models");
 const multer = require("multer");
 const path = require("path");
-
 const { Op } = require("sequelize");
 const config = require("../config/config");
 
-const AWS = require("aws-sdk");
-// const s3 = new AWS.S3({
-//   accessKeyId: config.S3.accessKey,
-//   secretAccessKey: config.S3.secretKey,
-//   region: config.S3.region,
-// });
-const s3 = new AWS.S3({
+// AWS SDK v3 imports
+const {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+
+// Initialize S3 client with v3
+const s3 = new S3Client({
   region: config.S3.region,
+  // If you're using accessKeyId and secretAccessKey, uncomment and add them:
+  // credentials: {
+  //   accessKeyId: config.S3.accessKey,
+  //   secretAccessKey: config.S3.secretKey,
+  // },
 });
 
 module.exports = {
@@ -81,7 +88,6 @@ module.exports = {
         return res.status(400).json({ error: "Missing file details" });
       }
 
-      // const { originalname } = req.file;
       const ext = path.extname(originalname);
 
       req.body.ext = ext;
@@ -89,12 +95,18 @@ module.exports = {
       const pic = await Pic.create(req.body);
       const savedName = "pics/" + pic.id + ext;
 
-      const presignedUrl = s3.getSignedUrl("putObject", {
+      // Create the PutObjectCommand for v3
+      const putObjectCommand = new PutObjectCommand({
         Bucket: config.S3.bucketName,
         Key: savedName,
-        Expires: 60,
-        ContentType: req.body.contentType,
+        ContentType: contentType,
       });
+
+      // Generate presigned URL with v3
+      const presignedUrl = await getSignedUrl(s3, putObjectCommand, {
+        expiresIn: 60,
+      });
+
       res.status(200).json({ pic, presignedUrl });
     } catch (error) {
       console.log(error);
@@ -121,7 +133,9 @@ module.exports = {
         Key: "pics/" + pic.id + pic.ext,
       };
 
-      await s3.deleteObject(deleteParams).promise();
+      // Use DeleteObjectCommand with v3
+      await s3.send(new DeleteObjectCommand(deleteParams));
+
       await pic.destroy();
 
       res.status(200).json({ message: "Picture deleted successfully" });
