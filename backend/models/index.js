@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const config = require("../config/config");
+const fs = require("fs");
 
 const sequelize = new Sequelize(
   config.db.database,
@@ -8,6 +9,13 @@ const sequelize = new Sequelize(
   {
     host: config.db.host,
     dialect: config.db.dialect,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        ca: fs.readFileSync("./rds-ca.pem").toString(),
+        // rejectUnauthorized: false, // Bỏ kiểm tra chứng chỉ SSL
+      },
+    },
   }
 );
 
