@@ -6,9 +6,12 @@ const { Op } = require("sequelize");
 const config = require("../config/config");
 
 const AWS = require("aws-sdk");
+// const s3 = new AWS.S3({
+//   accessKeyId: config.S3.accessKey,
+//   secretAccessKey: config.S3.secretKey,
+//   region: config.S3.region,
+// });
 const s3 = new AWS.S3({
-  accessKeyId: config.S3.accessKey,
-  secretAccessKey: config.S3.secretKey,
   region: config.S3.region,
 });
 
