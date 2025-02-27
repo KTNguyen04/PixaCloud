@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Author.associate = function (models) {
-    Author.hasMany(models.Pic, { foreignKey: "authorId", onDelete: "CASCADE" });
+    Author.hasMany(models.Pic);
   };
 
   return Author;

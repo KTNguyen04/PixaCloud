@@ -35,10 +35,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
   Pic.associate = function (models) {
-    Pic.belongsTo(models.Author, {
-      foreignKey: "authorId",
-      onDelete: "CASCADE",
-    });
+    Pic.belongsTo(models.Author);
   };
   return Pic;
 };

@@ -156,7 +156,7 @@ export default {
     async fetchPics() {
       try {
         // const response = await picService.getPics({ page: 1, limit: 10 });
-        await this.picStore.fetchPics({ page: 1, limit: 10 });
+        await this.picStore.fetchPics();
       } catch (error) {
         console.error("Error: ", error);
       }

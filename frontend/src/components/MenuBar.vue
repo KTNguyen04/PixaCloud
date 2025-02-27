@@ -162,6 +162,7 @@ export default {
         const file = this.picture;
         try {
           const response = await picService.getPresignedUrl({
+            title: this.title,
             originalname: file.name,
             contentType: file.type,
           });
