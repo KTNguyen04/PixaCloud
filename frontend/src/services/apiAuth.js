@@ -15,7 +15,6 @@ apiAuth.interceptors.request.use(
     const authStore = useAuthStore();
     const token = authStore.getToken;
     if (token) {
-      console.log(token);
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;

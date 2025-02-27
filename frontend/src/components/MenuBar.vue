@@ -134,7 +134,6 @@ export default {
       }
     },
     dates(val) {
-      console.log(val);
       if (!val || !val[1]) {
         this.fromDate = null;
         this.toDate = null;
@@ -144,7 +143,6 @@ export default {
       this.fromDate = val[0];
       this.toDate = val[1];
 
-      console.log(this.fromDate, this.toDate);
       const formatToYYYYMMDD = (d) => {
         const [day, month, year] = d.toLocaleDateString("vi-VN").split("/");
         return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
@@ -157,7 +155,6 @@ export default {
   },
   methods: {
     async onFormSubmit() {
-      console.log(this.title, this.picture);
       if (this.title && this.picture) {
         const file = this.picture;
         try {
@@ -201,12 +198,12 @@ export default {
 
     onFileSelect(event) {
       this.picture = event.files[0];
-      console.log(this.picture);
+
       const reader = new FileReader();
       reader.onload = async (e) => {
         this.src = e.target.result;
       };
-      console.log("pic", this.picture);
+
       reader.readAsDataURL(this.picture);
     },
   },

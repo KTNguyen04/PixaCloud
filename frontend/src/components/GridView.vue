@@ -13,7 +13,7 @@
     >
       <template #item="slotProps">
         <img
-          :src="`/${slotProps.item.path}`"
+          :src="`${imageBaseUrl}${slotProps.item.path}${slotProps.item.ext}`"
           :alt="slotProps.item.title"
           style="width: 100%; display: block"
         />
@@ -36,7 +36,7 @@
         <Card style="overflow: hidden" class="pb-0">
           <template #header>
             <img
-              :src="`/${image.path}`"
+              :src="`${imageBaseUrl}${image.path}${image.ext}`"
               :alt="image.title"
               style="cursor: pointer"
               @click="imageClick(index)"
@@ -45,7 +45,7 @@
             />
           </template>
           <template #title>{{ image.title }}</template>
-          <template #subtitle v-if="isPersonal"
+          <template #subtitle v-if="!isPersonal"
             >by {{ image.author }} -
             <i class="m-0">{{ image.createAt }}</i>
           </template>
@@ -145,6 +145,7 @@ export default {
       visible: false,
       displayCustom: false,
       currentId: "",
+      imageBaseUrl: import.meta.env.VITE_IMAGE_BASE_URL,
     };
   },
 
@@ -177,7 +178,6 @@ export default {
           severity: "danger",
         },
         accept: () => {
-          console.log(this.currentId);
           this.onDelete();
         },
         reject: () => {
@@ -191,11 +191,10 @@ export default {
       });
     },
     async onFormSubmit() {
-      console.log(this.title);
       if (this.title) {
         const formData = new FormData();
         formData.append("title", this.title);
-        console.log(formData);
+
         try {
           const response = await picService.editPic(this.currentId, formData);
           this.picStore.updatePic(response.pic);

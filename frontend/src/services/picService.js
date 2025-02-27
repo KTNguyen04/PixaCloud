@@ -3,7 +3,7 @@ import apiAuth from "./apiAuth";
 
 export default {
   async getPics(params = {}) {
-    return apiPublic.get("/v2/list", { params });
+    return apiPublic.get("/pics", { params });
   },
   // async uploadPic(data) {
   //   return apiAuth.post("/pics", data);

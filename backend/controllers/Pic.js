@@ -91,7 +91,7 @@ module.exports = {
       const ext = path.extname(originalname);
 
       req.body.ext = ext;
-      req.body.authorId = req.user.id;
+      req.body.AuthorId = req.user.id;
       const pic = await Pic.create(req.body);
       const savedName = "pics/" + pic.id + ext;
 

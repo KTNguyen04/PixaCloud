@@ -5,6 +5,7 @@ export const useAuthStore = defineStore("user", {
     token: localStorage.getItem("token") || null,
     user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null,
     loggedIn: localStorage.getItem("token") !== null,
+    isPersonal: false,
   }),
 
   actions: {
@@ -20,6 +21,9 @@ export const useAuthStore = defineStore("user", {
     setUser(user) {
       this.user = user;
       localStorage.setItem("user", JSON.stringify(this.user));
+    },
+    switchPersonal() {
+      this.isPersonal = !this.isPersonal;
     },
   },
   getters: {

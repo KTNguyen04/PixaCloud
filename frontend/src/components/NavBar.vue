@@ -14,7 +14,13 @@
             style="text-decoration: none"
           />
         </div>
-        <PVButton v-if="authStore.loggedIn" label="My Collection" text plain></PVButton>
+        <PVButton
+          v-if="authStore.loggedIn"
+          label="My Collection"
+          text
+          plain
+          @click="authStore.switchPersonal"
+        ></PVButton>
         <PVButton
           v-else
           label="My Collection"
@@ -73,12 +79,7 @@ export default {
   methods: {
     async loginCallback(response) {
       try {
-        //   console.log(response)
-        //   console.log(response.credential)
-        console.log("code", response);
         const res = await authService.googleLogin({ code: response.code });
-
-        console.log("Backend Response:", res);
 
         if (res.status === 200) {
           this.authStore.setToken(res.data.token);
