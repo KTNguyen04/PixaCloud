@@ -117,7 +117,14 @@ module.exports = {
     try {
       const { id } = req.params;
       const userId = req.user.id;
-      const pic = await Pic.findByPk(id);
+      const pic = await Pic.findByPk(id, {
+        include: [
+          {
+            model: Author,
+            attributes: ["id", "name"],
+          },
+        ],
+      });
 
       if (!pic) {
         return res.status(404).json({ error: "Picture not found" });
@@ -148,7 +155,14 @@ module.exports = {
     try {
       const { id } = req.params;
       const userId = req.user.id; // Lấy ID user hiện tại
-      const pic = await Pic.findByPk(id);
+      const pic = await Pic.findByPk(id, {
+        include: [
+          {
+            model: Author,
+            attributes: ["id", "name"],
+          },
+        ],
+      });
 
       if (!pic) {
         return res.status(404).json({ error: "Picture not found" });

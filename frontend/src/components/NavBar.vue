@@ -89,7 +89,7 @@ export default {
         if (res.status === 200) {
           this.authStore.setToken(res.data.token);
           this.authStore.setUser(res.data.user);
-          this.$router.push("/");
+          // this.$router.push("/");
         }
       } catch (error) {
         console.error("Error:", error);
@@ -103,7 +103,7 @@ export default {
       localStorage.removeItem("user");
 
       this.authStore.$reset();
-      this.$router.push("/");
+      // this.$router.push("/");
     },
     async setPersonalAndFetch(value) {
       this.authStore.setPersonal(value);

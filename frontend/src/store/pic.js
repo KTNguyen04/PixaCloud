@@ -26,8 +26,7 @@ export const usePicStore = defineStore("pic", {
       this.allPic = this.allPic.filter((pic) => pic.id !== id);
     },
     updatePic(updatedPic) {
-      const index = this.allPic.findIndex((pic) => pic.id === updatedPic.id);
-      this.allPic[index] = updatedPic;
+      this.allPic = this.allPic.map((pic) => (pic.id === updatedPic.id ? updatedPic : pic));
     },
   },
 
