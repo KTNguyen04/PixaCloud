@@ -2,7 +2,10 @@ import apiPublic from "./apiPublic";
 import apiAuth from "./apiAuth";
 
 export default {
-  async getPics(params = {}) {
+  async getPics(params = {}, isPersonal = false) {
+    if (isPersonal) {
+      return apiAuth.get("/pics/personal", { params });
+    }
     return apiPublic.get("/pics", { params });
   },
   // async uploadPic(data) {

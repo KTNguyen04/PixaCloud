@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import PicService from "@/services/picService";
+import { useAuthStore } from "./auth";
 
 export const usePicStore = defineStore("pic", {
   state: () => ({
@@ -11,7 +12,8 @@ export const usePicStore = defineStore("pic", {
   actions: {
     async fetchPics(params = {}) {
       try {
-        const response = await PicService.getPics(params);
+        const authStore = useAuthStore();
+        const response = await PicService.getPics(params, authStore.isPersonal);
         this.allPic = response.data;
       } catch (error) {
         console.log(error);
@@ -28,5 +30,6 @@ export const usePicStore = defineStore("pic", {
       this.allPic[index] = updatedPic;
     },
   },
+
   strict: true,
 });

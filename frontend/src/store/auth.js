@@ -22,8 +22,8 @@ export const useAuthStore = defineStore("user", {
       this.user = user;
       localStorage.setItem("user", JSON.stringify(this.user));
     },
-    switchPersonal() {
-      this.isPersonal = !this.isPersonal;
+    setPersonal(isPersonal) {
+      this.isPersonal = isPersonal;
     },
   },
   getters: {

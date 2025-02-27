@@ -56,7 +56,7 @@ module.exports = {
     try {
       const userId = req.user.id; // Lấy ID của user hiện tại
       const { sort = "DESC", startDate, endDate } = req.query;
-      const whereCondition = { authorId: userId };
+      const whereCondition = { AuthorId: userId };
 
       if (startDate || endDate) {
         whereCondition.createdAt = {};

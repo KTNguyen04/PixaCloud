@@ -45,12 +45,16 @@
             />
           </template>
           <template #title>{{ image.title }}</template>
-          <template #subtitle v-if="!isPersonal"
-            >by {{ image.author }} -
-            <i class="m-0">{{ image.createAt }}</i>
+          <template #subtitle v-if="!authStore.isPersonal"
+            >by {{ image.Author.name }} -
+            <i class="m-0">{{
+              new Date(image.createdAt).toISOString().split("T")[0].split("-").reverse().join("-")
+            }}</i>
           </template>
           <template #subtitle v-else>
-            <i class="mr-auto">{{ image.createAt }}</i>
+            <i class="mr-auto">{{
+              new Date(image.createAt).toISOString().split("T")[0].split("-").reverse().join("-")
+            }}</i>
             <PVToast />
             <ConfirmPopup></ConfirmPopup>
             <div class="card flex flex-wrap gap-2 mt-2 mb-0 justify-content-center">
@@ -130,6 +134,7 @@ import picService from "@/services/picService";
 import InputText from "primevue/inputtext";
 import ConfirmPopup from "primevue/confirmpopup";
 import { usePicStore } from "@/store/pic";
+import { useAuthStore } from "@/store/auth";
 
 export default {
   components: {
@@ -140,7 +145,6 @@ export default {
   },
   data() {
     return {
-      isPersonal: false,
       activeIndex: 0,
       visible: false,
       displayCustom: false,
@@ -256,6 +260,9 @@ export default {
   computed: {
     picStore() {
       return usePicStore();
+    },
+    authStore() {
+      return useAuthStore();
     },
     images() {
       return this.picStore.allPic;

@@ -10,8 +10,8 @@
             plain
             size="large"
             as="a"
-            href="/"
             style="text-decoration: none"
+            @click="setPersonalAndFetch(false)"
           />
         </div>
         <PVButton
@@ -19,7 +19,7 @@
           label="My Collection"
           text
           plain
-          @click="authStore.switchPersonal"
+          @click="setPersonalAndFetch(true)"
         ></PVButton>
         <PVButton
           v-else
@@ -44,10 +44,11 @@
           <template v-else>
             <Avatar
               id="avatar"
-              icon="pi pi-user"
+              :image="authStore.user.avatar"
               style="background-color: #dee9fc; color: #1a2551"
               shape="circle"
               @click="toggle"
+              v-tooltip.bottom="authStore.user.email"
             />
             <Popover ref="op">
               <PVButton label="Log Out" icon="pi pi-sign-out" text plain @click="logOut"></PVButton>
@@ -63,6 +64,7 @@
 import Avatar from "primevue/avatar";
 import authService from "@/services/authService";
 import { useAuthStore } from "@/store/auth";
+import { usePicStore } from "@/store/pic";
 
 import Popover from "primevue/popover";
 
@@ -74,6 +76,9 @@ export default {
   computed: {
     authStore() {
       return useAuthStore();
+    },
+    picStore() {
+      return usePicStore();
     },
   },
   methods: {
@@ -99,6 +104,10 @@ export default {
 
       this.authStore.$reset();
       this.$router.push("/");
+    },
+    async setPersonalAndFetch(value) {
+      this.authStore.setPersonal(value);
+      await this.picStore.fetchPics(); // Gọi fetch sau khi cập nhật
     },
   },
 };
