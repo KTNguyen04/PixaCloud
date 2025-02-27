@@ -107,7 +107,7 @@ export default {
     },
     async setPersonalAndFetch(value) {
       this.authStore.setPersonal(value);
-      await this.picStore.fetchPics(); // Gọi fetch sau khi cập nhật
+      await this.picStore.fetchPics();
     },
   },
 };

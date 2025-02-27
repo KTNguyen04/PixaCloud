@@ -53,7 +53,7 @@
           </template>
           <template #subtitle v-else>
             <i class="mr-auto">{{
-              new Date(image.createAt).toISOString().split("T")[0].split("-").reverse().join("-")
+              new Date(image.createdAt).toISOString().split("T")[0].split("-").reverse().join("-")
             }}</i>
             <PVToast />
             <ConfirmPopup></ConfirmPopup>
