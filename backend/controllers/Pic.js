@@ -122,7 +122,7 @@ module.exports = {
       if (!pic) {
         return res.status(404).json({ error: "Picture not found" });
       }
-      if (pic.authorId !== userId) {
+      if (pic.AuthorId !== userId) {
         return res
           .status(403)
           .json({ error: "You do not have permission to delete this picture" });
@@ -153,7 +153,7 @@ module.exports = {
       if (!pic) {
         return res.status(404).json({ error: "Picture not found" });
       }
-      if (pic.authorId !== userId) {
+      if (pic.AuthorId !== userId) {
         return res
           .status(403)
           .json({ error: "You do not have permission to update this picture" });

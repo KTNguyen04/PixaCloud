@@ -196,14 +196,11 @@ export default {
     },
     async onFormSubmit() {
       if (this.title) {
-        const formData = new FormData();
-        formData.append("title", this.title);
-
         try {
-          const response = await picService.editPic(this.currentId, formData);
-          this.picStore.updatePic(response.pic);
+          const response = await picService.editPic(this.currentId, { title: this.title });
+          this.picStore.updatePic(response);
+          this.currentId = null;
 
-          this.currentID = null;
           this.$toast.add({
             severity: "info",
             summary: "Confirmed",
@@ -234,6 +231,7 @@ export default {
       try {
         await picService.deletePic(this.currentId);
         this.picStore.deletePic(this.currentId);
+        this.currentId = null;
         this.$toast.add({
           severity: "info",
           summary: "Confirmed",
