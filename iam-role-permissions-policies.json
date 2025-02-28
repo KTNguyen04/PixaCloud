@@ -1,0 +1,28 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:PutObject", "s3:GetObject", "s3:PutObjectAcl"],
+      "Resource": "arn:aws:s3:::pixacloud252/pics/*"
+    },
+    {
+      "Sid": "Statement1",
+      "Effect": "Allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": "arn:aws:secretsmanager:us-east-1:545009838291:secret:rds!db-6ac25efe-1a97-404d-bf16-b8e87846024b-GnlRBy"
+    },
+    {
+      "Sid": "Statement2",
+      "Effect": "Allow",
+      "Action": "rds:DescribeDBInstances",
+      "Resource": "arn:aws:rds:us-east-1:545009838291:db:*"
+    },
+    {
+      "Sid": "Statement3",
+      "Effect": "Allow",
+      "Action": "secretsmanager:GetSecretValue",
+      "Resource": "arn:aws:secretsmanager:us-east-1:545009838291:secret:pc-secretkey-ixg8Pi"
+    }
+  ]
+}
